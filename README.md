@@ -23,5 +23,6 @@
 
 ### Running the Script
 ```bash
-./check_device_warranty.sh <SerialNumber>
+./warrantiak.sh <SerialNumber>
+```
 
