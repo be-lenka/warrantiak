@@ -26,3 +26,20 @@
 ./warrantiak.sh <SerialNumber>
 ```
 
+### Example output
+```bash
+====================== Warrantiak =============================
+Serial Number  : UPB5ZLKD
+Full Type      : Lenovo L27m-30 - Type 66D0
+Type Number    : 66D0
+Type Name      : Lenovo L27m-30
+---------------------------------------------------------------
+Warranty Start : 2022-09-20
+2022-09-20
+Warranty End   : 2025-10-19
+2025-10-19
+Product        : 66D0KAC2EU
+Model          : KAC2EU
+===============================================================
+```
+If there if there is not this type off formatted output, please check your internet connection.
