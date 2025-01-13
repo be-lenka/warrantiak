@@ -1,7 +1,7 @@
 #!/bin/bash
 # ===============================================================
-# Usage : ./check_device_waranty.sh SERIAL_NR
-# Check if Serial Number is provided. Currently supports this manufacturers: 
+# Usage : ./warrantiak.sh SERIAL_NR
+# Check if Serial Number is still applicable, for your devices claim. Currently supports this manufacturers: 
 # -- Lenovo
 # -- //TODO HP 
 # -- //TODO APPLE
