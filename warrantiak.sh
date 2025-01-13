@@ -17,6 +17,19 @@ LENOVO_API_BASE_URL="https://pcsupport.lenovo.com/us/en/api/v4"
 
 SERIAL_NUMBER="$1"
 
+json_output() {
+    echo "{"
+    echo "  \"SerialNumber\": \"$serial_number\","
+    echo "  \"FullType\": \"$full_type\","
+    echo "  \"TypeNumber\": \"$type_number\","
+    echo "  \"TypeName\": \"$type_name\","
+    echo "  \"WarrantyStart\": \"$WARRANTY_START\","
+    echo "  \"WarrantyEnd\": \"$WARRANTY_END\","
+    echo "  \"Product\": \"$PRODUCT\","
+    echo "  \"Model\": \"$MODEL\""
+    echo "}"
+}
+
 get_type_info() {
   local serial_number="$1"
 
@@ -66,6 +79,8 @@ get_warranty_info() {
   echo "Product        : $PRODUCT"
   echo "Model          : $MODEL"
   echo "==============================================================="
+
+  # echo json_output()
 }
 
 TYPE_INFO=$(get_type_info "$SERIAL_NUMBER")
