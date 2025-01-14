@@ -14,6 +14,8 @@ if [ -z "$1" ]; then
 fi
 
 LENOVO_API_BASE_URL="https://pcsupport.lenovo.com/us/en/api/v4"
+HP_API_BASE_URL=""
+APPLE_API_BASE_URL=""
 
 SERIAL_NUMBER="$1"
 
