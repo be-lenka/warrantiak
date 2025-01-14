@@ -1,7 +1,7 @@
 #!/bin/bash
 # ===============================================================
-# Usage : ./check_device_waranty.sh SERIAL_NR
-# Check if Serial Number is provided. Currently supports this manufacturers: 
+# Usage : ./warrantiak.sh SERIAL_NR
+# Check if Serial Number is still applicable, for your devices claim. Currently supports this manufacturers: 
 # -- Lenovo
 # -- //TODO HP 
 # -- //TODO APPLE
@@ -14,6 +14,8 @@ if [ -z "$1" ]; then
 fi
 
 LENOVO_API_BASE_URL="https://pcsupport.lenovo.com/us/en/api/v4"
+HP_API_BASE_URL=""
+APPLE_API_BASE_URL=""
 
 SERIAL_NUMBER="$1"
 
