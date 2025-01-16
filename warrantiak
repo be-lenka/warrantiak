@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+#
+# Simple and efficient way to check the warranty status of devices using their serial numbers
+################################################################################
+# GLOBALS AND SHELL OPTIONS
+
+# NOTE: Should we look into allowing for a customized config file so that the
+#       user does not have to customize their shell's run command file or
+#       manually override these every time they want to change them?
+set -o nounset
+set -o errexit
+
+# Set serial number to check
+# If $_SERIAL_NUMBER is not set, shift over the option completely
+_serial_number=${_SERIAL_NUMBER:-}
+if [[ -n "${_serial_number}" ]]; then
+    _serial_number="$_serial_number"
+else
+    _serial_number=""
+fi
+
+# Set the output format to JSON
+# If $_JSON_OUTPUT is not set, shift over the option completely
+_json_output=${_JSON_OUTPUT:-}
+if [[ -n "${_json_output}" ]]; then
+    _json_output="$_json_output"
+else
+    _json_output=""
+fi
+
+# Load the API files for the vendors
+source lib/warrantiak_hp.sh
+source lib/warrantiak_lenovo.sh
+
+################################################################################
+# HELPER AND MENU FUNCTIONS
+
+################################################################################
+# DESC: Checks to make sure the user has the appropriate utilities installed
+# ARGS: None
+# OUTS: None
+################################################################################
+function checkUtils() {
+    readonly MSG="not found. Please make sure this is installed and in PATH."
+    readonly UTILS="awk basename cat curl date echo grep head printf seq \
+                    tr read"
+
+    for u in $UTILS
+    do
+        command -v "$u" >/dev/null 2>&1 || { echo >&2 "$u ${MSG}"; exit 1; }
+    done
+
+    # NOTE: The --version flag is only available in GNU date which is required
+    # for how the current date/time strings are used in this shell script.
+    # To fully support the legacy BSD date found in a default install within
+    # macOS and older distributions of Linux and Unix, a handful of helper
+    # functions can probably be created to handle every case of incompatibility
+    # between the two. Until that's implemented, it is probably best to warn
+    # the user that this will not work rather than having it silently bomb out
+    # during runtime.
+    if ! date --version >/dev/null 2>&1; then
+        echo "ERROR: GNU date is required."
+        echo "If you're on macOS, please install it using 'brew install coreutils'."
+        echo "Ensure that your PATH is configured to use GNU date as well."
+        echo "See the README.md for further details."
+        exit 1
+    fi
+}
+
+################################################################################
+# DESC: Prints a formatted message of the selected option by the user to stdout
+# ARGS: $* (required): String to print (usually provided by other functions)
+# OUTS: None
+################################################################################
+function optionPicked() {
+    local msg=${*:-"Error: No message passed"}
+
+    echo -e "${msg}\n"
+}
+
+################################################################################
+# DESC: Help information printed to stdout during non-interactive mode
+# ARGS: None
+# OUTS: None
+################################################################################
+function usage() {
+    readonly PROGRAM=$(basename "$0")
+
+    echo "
+NAME
+    ${PROGRAM} - Simple and efficient way to check the warranty status of devices using their serial numbers
+
+SYNOPSIS
+    For non-interactive mode: ${PROGRAM} [OPTIONS]
+    For interactive mode: ${PROGRAM}
+
+DESCRIPTION
+    This script allows you to check the warranty status of devices using their serial numbers. 
+    It can be run in interactive mode or non-interactive mode. 
+
+GENERATE OPTIONS
+    -L, --lenovo-check
+        check the warranty status of a Lenovo device
+    -H, --hp-check
+        check the warranty status of an HP device"
+}
+
+################################################################################
+# DESC: Displays the interactive menu and saves the user supplied option
+# ARGS: None
+# OUTS: $opt: Option selected by the user based on menu choice
+################################################################################
+function showMenu() {
+    # These are "global" and can be overriden from users if so desired
+    NORMAL=$(tput sgr0)
+    CYAN=$(tput setaf 6)
+    BOLD=$(tput bold)
+    RED=$(tput setaf 1)
+    YELLOW=$(tput setaf 3)
+    WHITE=$(tput setaf 7)
+
+    # Adjustable color menu option
+    TITLES="${BOLD}${CYAN}"
+    TEXT="${NORMAL}${WHITE}"
+    NUMS="${NORMAL}${BOLD}${WHITE}"
+    HELP_TXT="${NORMAL}${CYAN}"
+    EXIT_TXT="${BOLD}${CYAN}"
+
+    printf %b "\\n${TITLES} Check:${NORMAL}\\n"
+    printf %b "${NUMS}    1)${TEXT} Lenovo device (by serial number)\\n"
+    printf %b "${NUMS}    2)${TEXT} HP device (by serial number)\\n"
+    printf %b "\\n${HELP_TXT}Please enter a menu option or ${EXIT_TXT}press Enter to exit.\\n"
+    printf %b "${TEXT}> ${NORMAL}"
+    read -r opt
+}
+
+function lenovoStats() {
+    TYPE_INFO=$(_lenovo_get_type_info "$1")
+    _lenovo_get_warranty_info "$1" "$TYPE_INFO" "$_json_output"
+}
+
+function hpStats() {
+    TYPE_INFO=$(_hp_get_type_info "$1")
+    _hp_get_warranty_info "$1" "$TYPE_INFO" "$_json_output"
+}
+
+################################################################################
+# MAIN
+
+# Check to make sure all utilities required for this script are installed
+checkUtils
+
+# Parse non-interative commands
+if [[ "$#" -eq 1 ]]; then
+    case "$1" in
+        # GENERATE OPTIONS
+        -L|--lenovo-check)
+            sn="${_serial_number:-}"
+            while [[ -z "${sn}" ]]; do
+                read -r -p "Which serial number? " sn
+            done
+            lenovoStats "${sn}";;
+        -H|--hp-check)
+            sn="${_serial_number:-}"
+            while [[ -z "${sn}" ]]; do
+                read -r -p "Which serial number? " sn
+            done
+            hpStats "${sn}";;
+    esac
+    exit 0;
+fi
+[[ "$#" -gt 1 ]] && { echo "Invalid arguments"; usage; exit 1; }
+
+# Parse interactive commands
+clear
+showMenu
+
+while [[ "${opt}" != "" ]]; do
+    clear
+    case "${opt}" in
+        1) sn=""
+           _json_output="false"
+           while [[ -z "${sn}" ]]; do
+               read -r -p "Which serial number? " sn
+           done
+           lenovoStats "${sn}"; showMenu;;        
+        2) sn=""
+           _json_output="false"
+           while [[ -z "${sn}" ]]; do
+               read -r -p "Which serial number? " sn
+           done
+           hpStats "${sn}"; showMenu;;
+        q|"\n") exit;;
+        *) clear; optionPicked "Pick an option from the menu"; showMenu;;
+    esac
+done

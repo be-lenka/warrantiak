@@ -1,25 +1,10 @@
-#!/bin/bash
-# ===============================================================
-# Usage : ./warrantiak.sh SERIAL_NR
-# Check if Serial Number is still applicable, for your devices claim. Currently supports this manufacturers: 
-# -- Lenovo
-# -- //TODO HP 
-# -- //TODO APPLE
-# Created by : BeLenka DEV 
-# ===============================================================
-
-if [ -z "$1" ]; then
-  echo "Usage: $0 <SerialNumber>"
-  exit 1
-fi
+#!/usr/bin/env bash
 
 LENOVO_API_BASE_URL="https://pcsupport.lenovo.com/us/en/api/v4"
 HP_API_BASE_URL=""
 APPLE_API_BASE_URL=""
 
-SERIAL_NUMBER="$1"
-
-json_output() {
+_lenovo_json_output() {
     echo "{"
     echo "  \"SerialNumber\": \"$serial_number\","
     echo "  \"FullType\": \"$full_type\","
@@ -32,7 +17,7 @@ json_output() {
     echo "}"
 }
 
-get_type_info() {
+_lenovo_get_type_info() {
   local serial_number="$1"
 
   TYPE_INFO=$(curl -s "$LENOVO_API_BASE_URL/mse/getproducts?productId=$serial_number" \
@@ -49,9 +34,10 @@ get_type_info() {
   echo "$serial_number|$FULL_TYPE|$TYPE_NUMBER|$TYPE_NAME"
 }
 
-get_warranty_info() {
+_lenovo_get_warranty_info() {
   local serial_number="$1"
   local type_info="$2"
+  local json_output="$3"
 
   # Parse the pipe-separated values
   IFS='|' read -r serial_number full_type type_number type_name <<< "$type_info"
@@ -70,7 +56,12 @@ get_warranty_info() {
   PRODUCT=$(echo "$RESPONSE" | grep -o '"product":"[^"]*"' | sed 's/"product":"//;s/"//')
   MODEL=$(echo "$RESPONSE" | grep -o '"model":"[^"]*"' | sed 's/"model":"//;s/"//')
 
-  echo "====================== Warrantiak ============================="
+  # Output the JSON
+  [[ "$json_output" == "true" ]] && { _lenovo_json_output; return; }
+
+  # Output the human-readable format
+  echo ""
+  echo "=================== LENOVO Warranty Info ======================="
   echo "Serial Number  : $serial_number"
   echo "Full Type      : $full_type"
   echo "Type Number    : $type_number"
@@ -82,9 +73,4 @@ get_warranty_info() {
   echo "Model          : $MODEL"
   echo "==============================================================="
 
-  # echo json_output()
 }
-
-TYPE_INFO=$(get_type_info "$SERIAL_NUMBER")
-
-get_warranty_info "$SERIAL_NUMBER" "$TYPE_INFO"

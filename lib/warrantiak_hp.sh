@@ -1,13 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if [ -z "$1" ]; then
-  echo "Usage: $0 <SerialNumber>"
-  exit 1
-fi
-
-SERIAL_NUMBER="$1"
-
-json_output() {
+_hp_json_output() {
     echo "{"
     echo "  \"SerialNumber\": \"$serial_number\","
     echo "  \"FullType\": \"$full_type\","
@@ -20,7 +13,7 @@ json_output() {
     echo "}"
 }
 
-get_type_info() {
+_hp_get_type_info() {
   local serial_number="$1"
 
   TYPE_INFO=$(curl -s "https://support.hp.com/wcc-services/searchresult/sk-en?q=$serial_number&context=pdp&authState=anonymous&template=WarrantyLanding" \
@@ -37,9 +30,10 @@ get_type_info() {
   echo "$TYPE_INFO"
 }
 
-get_warranty_info() {
+_hp_get_warranty_info() {
   local serial_number="$1"
   local product_number="$2"
+  local json_output="$3"
 
   # Construct the JSON payload
   local payload=$(cat <<EOF
@@ -72,7 +66,11 @@ EOF
     local status=$(echo "$response" | grep -o '"status":"[^"]*"' | sed 's/"status":"//;s/"//')
     local product_name=$(echo "$response" | grep -o '"productName":"[^"]*"' | sed 's/"productName":"//;s/"//')
 
-    # Display warranty information
+    # Output the JSON
+    [[ "$json_output" == "true" ]] && { _lenovo_json_output; return; }
+
+    # Output the human-readable format
+    echo ""
     echo "====================== HP Warranty Info ======================="
     echo "Product Name    : $product_name"
     echo "Serial Number   : $serial_number"
@@ -87,5 +85,3 @@ EOF
   fi
 }
 
-TYPE_INFO=$(get_type_info "$SERIAL_NUMBER")
-get_warranty_info $SERIAL_NUMBER
