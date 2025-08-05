@@ -31,6 +31,8 @@ fi
 # Load the API files for the vendors
 source lib/warrantiak_hp.sh
 source lib/warrantiak_lenovo.sh
+source lib/warrantiak_dell.sh
+source lib/warrantiak_asus.sh
 
 ################################################################################
 # HELPER AND MENU FUNCTIONS
@@ -144,6 +146,14 @@ function hpStats() {
     _hp_get_warranty_info "$1" "$TYPE_INFO" "$_json_output"
 }
 
+function dellStats() {
+    _dell_get_warranty_info "$1" "$_json_output"
+}
+
+function asusStats() {
+    _asus_get_warranty_info "$1" "$_json_output"
+}
+
 ################################################################################
 # MAIN
 
@@ -160,6 +170,18 @@ if [[ "$#" -eq 1 ]]; then
                 read -r -p "Which serial number? " sn
             done
             lenovoStats "${sn}";;
+        -D|--dell-check)
+            sn="${_serial_number:-}"
+            while [[ -z "${sn}" ]]; do
+                read -r -p "Which serial number? " sn
+            done
+            dellStats "${sn}";;
+        -A|--asus-check)
+            sn="${_serial_number:-}"
+            while [[ -z "${sn}" ]]; do
+                read -r -p "Which serial number? " sn
+            done
+            asusStats "${sn}";;
         -H|--hp-check)
             sn="${_serial_number:-}"
             while [[ -z "${sn}" ]]; do
@@ -190,6 +212,18 @@ while [[ "${opt}" != "" ]]; do
                read -r -p "Which serial number? " sn
            done
            hpStats "${sn}"; showMenu;;
+        3) sn=""
+           _json_output="false"
+           while [[ -z "${sn}" ]]; do
+               read -r -p "Which serial number? " sn
+           done
+           dellStats "${sn}"; showMenu;;
+        4) sn=""
+           _json_output="false"
+           while [[ -z "${sn}" ]]; do
+               read -r -p "Which serial number? " sn
+           done
+           asusStats "${sn}"; showMenu;;
         q|"\n") exit;;
         *) clear; optionPicked "Pick an option from the menu"; showMenu;;
     esac

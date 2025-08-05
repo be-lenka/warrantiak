@@ -1,6 +1,6 @@
 # Warrantiak: Device Warranty Checker
 
-> `warrantiak` is a shell script to check the warranty status of devices using their serial numbers. Currently, it supports Lenovo and HP devices, with plans to add support for DELL and Apple in the future.
+> `warrantiak` is a shell script to check the warranty status of devices using their serial numbers. Currently, it supports Lenovo, HP, ASUS and DELL devices, with plans to add support for DELL and Apple in the future.
 
 ![Bez názvu](https://github.com/user-attachments/assets/3561ea43-1f43-4e93-8431-83da50e9c76a)
 
@@ -9,6 +9,7 @@
 - Fetch device type and warranty information
 - Display warranty start and end dates, product type, and model.
 - Simple and easy-to-use command-line interface.
+- Devices check: DELL, ASUS, HP, Lenovo
 
 ## Table of Contents
 
@@ -60,6 +61,10 @@ GENERATE OPTIONS
         check the warranty status of a Lenovo device
     -H, --hp-check
         check the warranty status of a HP device
+    -D, --dell-check
+        check the warranty status of a DELL device
+    -A, --asus-check
+        check the warranty status of a ASUS device
 ```
 
 ### Non-interactive S/N check
