@@ -104,7 +104,7 @@ GENERATE OPTIONS
     -L, --lenovo-check
         check the warranty status of a Lenovo device
     -H, --hp-check
-        check the warranty status of an HP device"
+        check the warranty status of an HP device
     -D, --dell-check
         check the warranty status of a Dell device
     -A, --asus-check
