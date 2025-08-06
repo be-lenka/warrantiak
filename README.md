@@ -2,7 +2,8 @@
 
 > `warrantiak` is a shell script to check the warranty status of devices using their serial numbers. Currently, it supports Lenovo, HP, ASUS and DELL devices, with plans to add support for DELL and Apple in the future.
 
-![Bez názvu](https://github.com/user-attachments/assets/3561ea43-1f43-4e93-8431-83da50e9c76a)
+<img width="1360" height="434" alt="image" src="https://github.com/user-attachments/assets/76c8cf17-b26d-483d-9468-27ac38a8841c" />
+
 
 ## Features
 
