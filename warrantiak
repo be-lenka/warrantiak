@@ -105,6 +105,10 @@ GENERATE OPTIONS
         check the warranty status of a Lenovo device
     -H, --hp-check
         check the warranty status of an HP device"
+    -D, --dell-check
+        check the warranty status of a Dell device
+    -A, --asus-check
+        check the warranty status of an Asus device"
 }
 
 ################################################################################
@@ -131,6 +135,8 @@ function showMenu() {
     printf %b "\\n${TITLES} Check:${NORMAL}\\n"
     printf %b "${NUMS}    1)${TEXT} Lenovo device (by serial number)\\n"
     printf %b "${NUMS}    2)${TEXT} HP device (by serial number)\\n"
+    printf %b "${NUMS}    3)${TEXT} DELL device (by serial number)\\n"
+    printf %b "${NUMS}    4)${TEXT} ASUS device (by serial number)\\n"
     printf %b "\\n${HELP_TXT}Please enter a menu option or ${EXIT_TXT}press Enter to exit.\\n"
     printf %b "${TEXT}> ${NORMAL}"
     read -r opt
