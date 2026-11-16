@@ -29,10 +29,18 @@ else
 fi
 
 # Load the API files for the vendors
-source lib/warrantiak_hp.sh
-source lib/warrantiak_lenovo.sh
-source lib/warrantiak_dell.sh
-source lib/warrantiak_asus.sh
+# They are next to the script when run from the repository, and in
+# ../share/warrantiak/lib when installed with `make install`
+_script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+if [[ -d "$_script_dir/lib" ]]; then
+    _lib_dir="$_script_dir/lib"
+else
+    _lib_dir="$_script_dir/../share/warrantiak/lib"
+fi
+source "$_lib_dir/warrantiak_hp.sh"
+source "$_lib_dir/warrantiak_lenovo.sh"
+source "$_lib_dir/warrantiak_dell.sh"
+source "$_lib_dir/warrantiak_asus.sh"
 
 ################################################################################
 # HELPER AND MENU FUNCTIONS
