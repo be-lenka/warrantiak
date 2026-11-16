@@ -3,13 +3,11 @@
 _hp_json_output() {
     echo "{"
     echo "  \"SerialNumber\": \"$serial_number\","
-    echo "  \"FullType\": \"$full_type\","
-    echo "  \"TypeNumber\": \"$type_number\","
-    echo "  \"TypeName\": \"$type_name\","
-    echo "  \"WarrantyStart\": \"$WARRANTY_START\","
-    echo "  \"WarrantyEnd\": \"$WARRANTY_END\","
-    echo "  \"Product\": \"$PRODUCT\","
-    echo "  \"Model\": \"$MODEL\""
+    echo "  \"ProductName\": \"$product_name\","
+    echo "  \"ProductNumber\": \"$product_number\","
+    echo "  \"WarrantyStart\": \"$warranty_start\","
+    echo "  \"WarrantyEnd\": \"$warranty_end\","
+    echo "  \"WarrantyStatus\": \"$status\""
     echo "}"
 }
 
@@ -27,7 +25,8 @@ _hp_get_type_info() {
     -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Safari/605.1.15" \
     --compressed)
 
-  echo "$TYPE_INFO"
+  # Return only the product number (empty if HP does not know the serial)
+  echo "$TYPE_INFO" | grep -o '"productNumber":"[^"]*"' | head -n1 | sed 's/"productNumber":"//;s/"//'
 }
 
 _hp_get_warranty_info() {
@@ -67,7 +66,7 @@ EOF
     local product_name=$(echo "$response" | grep -o '"productName":"[^"]*"' | sed 's/"productName":"//;s/"//')
 
     # Output the JSON
-    [[ "$json_output" == "true" ]] && { _lenovo_json_output; return; }
+    [[ "$json_output" == "true" ]] && { _hp_json_output; return; }
 
     # Output the human-readable format
     echo ""
