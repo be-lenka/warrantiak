@@ -100,7 +100,7 @@ sudo make uninstall
 For update/reinstall
 
 ```bash
-sudo make reinstall
+git pull && sudo make reinstall
 ```
 
 ## System requirements
